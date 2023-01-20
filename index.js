@@ -35,7 +35,7 @@ app.post('/:col/:key', async (req, res) => {
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
-
+// POst todos
 app.post('/todos', async (req, res) => {
   console.log(req.body)
   console.log(`from collection: Todos add with params ${JSON.stringify(req.body)}`)
@@ -60,6 +60,14 @@ app.delete('/:col/:key', async (req, res) => {
 })
 
 // Get a single item
+app.get('/todos', async (req, res) => {
+  const col = "todos"
+  const items = await db.collection(col).list()
+  console.log(JSON.stringify(item, null, 2))
+  res.json(items).end()
+})
+
+// Get todos
 app.get('/:col/:key', async (req, res) => {
   const col = req.params.col
   const key = req.params.key
