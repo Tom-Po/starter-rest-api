@@ -37,14 +37,22 @@ app.post('/:col/:key', async (req, res) => {
 })
 // POst todos
 app.post('/todos', async (req, res) => {
-  console.log(req.body)
-  console.log(`from collection: Todos add with params ${JSON.stringify(req.body)}`)
   let key = 0;
   const lastest = await db.collection("todos").latest();
   if (lastest) {
     key = parseInt(lastest.key) + 1
   }
   const item = await db.collection("todos").set(key.toString(), req.body)
+  console.log(JSON.stringify(item, null, 2))
+  res.json(item).end()
+})
+app.post('/seeds', async (req, res) => {
+  let key = 0;
+  const lastest = await db.collection("seeds").latest();
+  if (lastest) {
+    key = parseInt(lastest.key) + 1
+  }
+  const item = await db.collection("seeds").set(key.toString(), req.body)
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
@@ -63,13 +71,20 @@ app.delete('/:col/:key', async (req, res) => {
 app.get('/todos', async (req, res) => {
   const col = "todos"
   const { results: todosMetadata } = await db.collection(col).list();
-
   const todos = await Promise.all(
     todosMetadata.map(async ({ key }) => (await db.collection(col).get(key)).props)
   );
-
   res.send(todos);
 })
+app.get('/seeds', async (req, res) => {
+  const col = "seeds"
+  const { results: seedsMetadata } = await db.collection(col).list();
+  const seeds = await Promise.all(
+    seedsMetadata.map(async ({ key }) => (await db.collection(col).get(key)).props)
+  );
+  res.send(seeds);
+})
+
 
 // Get todos
 app.get('/:col/:key', async (req, res) => {
