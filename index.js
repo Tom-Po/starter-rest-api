@@ -42,9 +42,9 @@ app.post('/todos', async (req, res) => {
   let key = 0;
   const lastest = await db.collection("todos").latest();
   if (lastest) {
-    key = lastest.key + 1
+    key = parseInt(lastest.key) + 1
   }
-  const item = await db.collection("todos").set(key, req.body)
+  const item = await db.collection("todos").set(key.toString(), req.body)
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
