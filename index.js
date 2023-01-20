@@ -46,9 +46,16 @@ app.post('/seeds', async (req, res) => {
 })
 
 // Delete an item
+// Todo
 app.delete('/todos/:key', async (req, res) => {
   const key = req.params.key
   const item = await db.collection("todos").delete(key)
+  res.json(item).end()
+})
+// Seeds
+app.delete('/seeds/:key', async (req, res) => {
+  const key = req.params.key
+  const item = await db.collection("seeds").delete(key)
   res.json(item).end()
 })
 
