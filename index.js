@@ -35,6 +35,8 @@ app.post('/:col/:key', async (req, res) => {
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
+
+// All post
 // POst todos
 app.post('/todos', async (req, res) => {
   let key = 0;
@@ -46,6 +48,7 @@ app.post('/todos', async (req, res) => {
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
+// post seeds
 app.post('/seeds', async (req, res) => {
   let key = 0;
   const lastest = await db.collection("seeds").latest();
@@ -58,16 +61,14 @@ app.post('/seeds', async (req, res) => {
 })
 
 // Delete an item
-app.delete('/:col/:key', async (req, res) => {
-  const col = req.params.col
+app.delete('/todos/:key', async (req, res) => {
   const key = req.params.key
-  console.log(`from collection: ${col} delete key: ${key} with params ${JSON.stringify(req.params)}`)
-  const item = await db.collection(col).delete(key)
-  console.log(JSON.stringify(item, null, 2))
+  const item = await db.collection("todos").delete(key)
   res.json(item).end()
 })
 
 // Get all  items
+// All todos
 app.get('/todos', async (req, res) => {
   const col = "todos"
   const { results: todosMetadata } = await db.collection(col).list();
@@ -76,11 +77,18 @@ app.get('/todos', async (req, res) => {
   );
   res.send(todos);
 })
+// All seeds
 app.get('/seeds', async (req, res) => {
   const col = "seeds"
   const { results: seedsMetadata } = await db.collection(col).list();
   const seeds = await Promise.all(
-    seedsMetadata.map(async ({ key }) => (await db.collection(col).get(key)).props)
+    seedsMetadata.map(async ({ key }) => {
+      const item = (await db.collection(col).get(key)).props
+      return {
+        ...item,
+        id: key
+      };
+    })
   );
   res.send(seeds);
 })
