@@ -11,7 +11,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 async function getItems(col) {
-  const { resultsMetaData } = await db.collection(col).list();
+  const { results: resultsMetaData } = await db.collection(col).list();
   const items = await Promise.all(
     resultsMetaData.map(async ({ key }) => {
       const item = (await db.collection(col).get(key)).props
