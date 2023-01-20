@@ -44,7 +44,7 @@ app.post('/todos', async (req, res) => {
   if (lastest) {
     key = parseInt(lastest.key) + 1
   }
-  const item = await db.collection("todos").set(key.toString(), req.body)
+  const item = await db.collection("todos").set(key.toString(), JSON.parse(req.body))
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
