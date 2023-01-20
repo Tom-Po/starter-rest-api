@@ -44,7 +44,7 @@ app.post('/todos', async (req, res) => {
   if (lastest) {
     key = parseInt(lastest.key) + 1
   }
-  const item = await db.collection("todos").set(key.toString(), JSON.parse(req.body))
+  const item = await db.collection("todos").set(key.toString(), req.body)
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
 })
@@ -59,12 +59,16 @@ app.delete('/:col/:key', async (req, res) => {
   res.json(item).end()
 })
 
-// Get a single item
+// Get all  items
 app.get('/todos', async (req, res) => {
   const col = "todos"
-  const items = await db.collection(col).list()
-  console.log(JSON.stringify(items, null, 2))
-  res.json(items).end()
+  const { results: todosMetadata } = await db.collection(col).list();
+
+  const todos = await Promise.all(
+    todosMetadata.map(async ({ key }) => (await db.collection(col).get(key)).props)
+  );
+
+  res.send(todos);
 })
 
 // Get todos
