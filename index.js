@@ -24,13 +24,13 @@ async function getItems(col) {
   return items;
 }
 
-async function addItem(col, item) {
+async function addItem(col, body) {
   let key = 0;
   const lastest = await db.collection(col).latest();
   if (lastest) {
     key = parseInt(lastest.key) + 1
   }
-  const item = await db.collection(col).set(key.toString(), req.body)
+  const item = await db.collection(col).set(key.toString(), body)
   return item;
 }
 // All post
