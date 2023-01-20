@@ -39,7 +39,7 @@ app.post('/:col/:key', async (req, res) => {
 app.post('/todos', async (req, res) => {
   console.log(req.body)
   const col = req.params.data
-  console.log(`from collection: ${col} delete key: ${key} with params ${JSON.stringify(req.params)}`)
+  console.log(`from collection: ${col} add with params ${JSON.stringify(req.body)}`)
   const item = await db.collection(col).set(req.body)
   console.log(JSON.stringify(item, null, 2))
   res.json(item).end()
