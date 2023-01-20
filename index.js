@@ -10,53 +10,38 @@ app.use(cors({
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// #############################################################################
-// This configures static hosting for files in /public that have the extensions
-// listed in the array.
-// var options = {
-//   dotfiles: 'ignore',
-//   etag: false,
-//   extensions: ['htm', 'html','css','js','ico','jpg','jpeg','png','svg'],
-//   index: ['index.html'],
-//   maxAge: '1m',
-//   redirect: false
-// }
-// app.use(express.static('public', options))
-// #############################################################################
+async function getItems(col) {
+  const { resultsMetaData } = await db.collection(col).list();
+  const items = await Promise.all(
+    resultsMetaData.map(async ({ key }) => {
+      const item = (await db.collection(col).get(key)).props
+      return {
+        ...item,
+        id: key
+      };
+    })
+  );
+  return items;
+}
 
-// Create or Update an item
-app.post('/:col/:key', async (req, res) => {
-  console.log(req.body)
-
-  const col = req.params.col
-  const key = req.params.key
-  console.log(`from collection: ${col} delete key: ${key} with params ${JSON.stringify(req.params)}`)
-  const item = await db.collection(col).set(key, req.body)
-  console.log(JSON.stringify(item, null, 2))
-  res.json(item).end()
-})
-
-// All post
-// POst todos
-app.post('/todos', async (req, res) => {
+async function addItem(col, item) {
   let key = 0;
-  const lastest = await db.collection("todos").latest();
+  const lastest = await db.collection(col).latest();
   if (lastest) {
     key = parseInt(lastest.key) + 1
   }
-  const item = await db.collection("todos").set(key.toString(), req.body)
-  console.log(JSON.stringify(item, null, 2))
+  const item = await db.collection(col).set(key.toString(), req.body)
+  return item;
+}
+// All post
+// POst todos
+app.post('/todos', async (req, res) => {
+  const item = await addItem("todos", req.body)
   res.json(item).end()
 })
 // post seeds
 app.post('/seeds', async (req, res) => {
-  let key = 0;
-  const lastest = await db.collection("seeds").latest();
-  if (lastest) {
-    key = parseInt(lastest.key) + 1
-  }
-  const item = await db.collection("seeds").set(key.toString(), req.body)
-  console.log(JSON.stringify(item, null, 2))
+  const item = await addItem("seeds", req.body)
   res.json(item).end()
 })
 
@@ -71,53 +56,16 @@ app.delete('/todos/:key', async (req, res) => {
 // All todos
 app.get('/todos', async (req, res) => {
   const col = "todos"
-  const { results: todosMetadata } = await db.collection(col).list();
-  const todos = await Promise.all(
-    todosMetadata.map(async ({ key }) => {
-      const item = (await db.collection(col).get(key)).props
-      return {
-        ...item,
-        id: key
-      };
-    })
-  );
+  const todos = await getItems(col)
   res.send(todos);
 })
 // All seeds
 app.get('/seeds', async (req, res) => {
   const col = "seeds"
-  const { results: seedsMetadata } = await db.collection(col).list();
-  const seeds = await Promise.all(
-    seedsMetadata.map(async ({ key }) => {
-      const item = (await db.collection(col).get(key)).props
-      return {
-        ...item,
-        id: key
-      };
-    })
-  );
+  const seeds = await getItems(col)
   res.send(seeds);
 })
 
-
-// Get todos
-app.get('/:col/:key', async (req, res) => {
-  const col = req.params.col
-  const key = req.params.key
-  console.log(`from collection: ${col} get key: ${key} with params ${JSON.stringify(req.params)}`)
-  const item = await db.collection(col).get(key)
-  console.log(JSON.stringify(item, null, 2))
-  res.json(item).end()
-})
-
-// Get a full listing
-app.get('/:col', async (req, res) => {
-  const col = req.params.col
-  console.log(`list collection: ${col} with params: ${JSON.stringify(req.params)}`)
-  const items = await db.collection(col).list()
-  console.log(JSON.stringify(items, null, 2))
-  res.json(items).end()
-})
 
 // Catch all handler for all other request.
 app.use('*', (req, res) => {
