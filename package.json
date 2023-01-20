@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "env-cmd nodemon index.js",
+    "local-dev": "nodemon index.js",
     "repl": "env-cmd node"
   },
   "keywords": [],

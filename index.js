@@ -63,7 +63,7 @@ app.delete('/:col/:key', async (req, res) => {
 app.get('/todos', async (req, res) => {
   const col = "todos"
   const items = await db.collection(col).list()
-  console.log(JSON.stringify(item, null, 2))
+  console.log(JSON.stringify(items, null, 2))
   res.json(items).end()
 })
 
