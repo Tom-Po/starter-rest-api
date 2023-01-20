@@ -73,7 +73,13 @@ app.get('/todos', async (req, res) => {
   const col = "todos"
   const { results: todosMetadata } = await db.collection(col).list();
   const todos = await Promise.all(
-    todosMetadata.map(async ({ key }) => (await db.collection(col).get(key)).props)
+    todosMetadata.map(async ({ key }) => {
+      const item = (await db.collection(col).get(key)).props
+      return {
+        ...item,
+        id: key
+      };
+    })
   );
   res.send(todos);
 })
