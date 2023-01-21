@@ -46,6 +46,7 @@ app.post('/seeds', async (req, res) => {
 })
 
 async function updateItem(col, key, item) {
+  await db.collection(col).delete(key)
   return await db.collection(col).set(key, item)
 }
 // Todo put
