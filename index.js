@@ -45,6 +45,22 @@ app.post('/seeds', async (req, res) => {
   res.json(item).end()
 })
 
+async function updateItem(col, key, item) {
+  return await db.collection(col).set(key, item)
+}
+// Todo put
+app.put('/todos/:key', async (req, res) => {
+  const key = req.params.key
+  const item = await updateItem('todos', key, req.body)
+  res.json(item).end()
+})
+// Seed put
+app.put('/seeds/:key', async (req, res) => {
+  const key = req.params.key
+  const item = await updateItem('seeds', key, req.body)
+  res.json(item).end()
+})
+
 // Delete an item
 // Todo
 app.delete('/todos/:key', async (req, res) => {
