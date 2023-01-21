@@ -46,6 +46,8 @@ app.post('/seeds', async (req, res) => {
 })
 
 async function updateItem(col, key, item) {
+  delete item.created
+  delete item.updated
   await db.collection(col).delete(key)
   return await db.collection(col).set(key, item)
 }
