@@ -31,7 +31,7 @@ async function addItem(col, body) {
     key = parseInt(lastest.key) + 1
   }
   const item = await db.collection(col).set(key.toString(), body)
-  return item.props;
+  return item;
 }
 // All post
 // POst todos
